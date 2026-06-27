@@ -1,587 +1,714 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="uz">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>汉语语法交互学习应用 (Xitoy tili grammatikasi)</title>
+    <title>HSK4_L3: 经理对我印象不错</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
+    <!-- Custom CSS for Flip Cards and Scrollbar -->
     <style>
-        /* Custom animations */
-        @keyframes dash {
-            to {
-                stroke-dashoffset: -20;
-            }
-        }
-        .animate-dash {
-            animation: dash 1s linear infinite;
-        }
+        .perspective-1000 { perspective: 1000px; }
+        .preserve-3d { transform-style: preserve-3d; }
+        .backface-hidden { backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800">
-    <div id="root"></div>
+<body class="min-h-screen bg-[#0f172a] bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#0f172a] font-sans selection:bg-indigo-500/30 text-white flex flex-col">
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+    <!-- Header -->
+    <header class="pt-12 pb-8 px-6 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-teal-300 mb-4 tracking-tight">
+            HSK4_L3: 经理对我印象不错
+        </h1>
+        <p class="text-lg md:text-xl font-medium text-slate-300">
+            Dilfuza Kāng lǎo shī bilan xitoy tilini o'rganmiz
+        </p>
+    </header>
 
-        // --- Icons (SVG Components) ---
-        // 内置图标以确保无需外部依赖即可运行
-        const BookOpen = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-        );
-        const CheckCircle = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-        );
-        const XCircle = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-        );
-        const RefreshCw = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
-        );
-        const Layout = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-        );
-        const MousePointer2 = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="m12 6.5 7.6 12.3c.7 1.1-.3 2.5-1.6 2.2l-6-1.5-6 1.5c-1.3.3-2.3-1.1-1.6-2.2z"/></svg>
-        );
-        const GitMerge = ({ size = 24, className = "" }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M6 21V9a9 9 0 0 0 9 9"/></svg>
-        );
+    <!-- Navigation Tabs -->
+    <nav class="max-w-6xl mx-auto px-4 mb-10 overflow-x-auto pb-4 hide-scrollbar w-full">
+        <div class="flex justify-start md:justify-center gap-2 md:gap-4 min-w-max" id="tabs-container">
+            <!-- Tabs injected here -->
+        </div>
+    </nav>
 
-        // --- 数据与常量 (Data & Constants) ---
+    <!-- Main Content Area -->
+    <main class="max-w-6xl mx-auto px-4 pb-24 w-full flex-1" id="main-content">
+        <!-- Content injected here based on active tab -->
+    </main>
 
-        const GRAMMAR_TERMS = {
-            subject: { cn: "主语", uz: "Ega", color: "#3B82F6" }, // Blue
-            predicate: { cn: "谓语(动词)", uz: "Kesim (Fe'l)", color: "#EF4444" }, // Red
-            object: { cn: "宾语", uz: "To'ldiruvchi", color: "#10B981" }, // Green
-            particle: { cn: "助词(得)", uz: "Yordamchi (de)", color: "#94A3B8" }, // Gray - Structural particle
-            adverb: { cn: "副词(很/也)", uz: "Ravish", color: "#6366f1" }, // Indigo - Adverbs like hěn, yě
-            adjective: { cn: "形容词(补语)", uz: "Sifat (Holat)", color: "#F59E0B" }, // Yellow/Orange - Complement of degree
-            negative: { cn: "否定词(不)", uz: "Inkor (bu)", color: "#DC2626" }, // Dark Red
-            comparison: { cn: "介词(比)", uz: "Solishtirish (bi)", color: "#8B5CF6" } // Purple
-        };
+    <!-- Footer -->
+    <footer class="border-t border-white/10 mt-auto bg-black/20 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-4 py-8 text-center text-slate-400 text-sm">
+            <p class="mb-1 font-medium text-slate-300">HSK 4- Lesson 3</p>
+            <p>&copy; 2026 Dilfuza Kāng lǎo shī (telegram@diffila)</p>
+        </div>
+    </footer>
 
-        const LESSONS = [
+    <!-- Application Logic -->
+    <script>
+        // --- DATA ---
+        const VOCABULARY = [
+            { id: 1, hanzi: "挺", pinyin: "tǐng", uz: "juda", ru: "очень", en: "very" },
+            { id: 2, hanzi: "紧张", pinyin: "jǐnzhāng", uz: "asabiy", ru: "нервный", en: "nervous" },
+            { id: 3, hanzi: "信心", pinyin: "xìnxīn", uz: "ishonch", ru: "уверенность", en: "confidence" },
+            { id: 4, hanzi: "能力", pinyin: "nénglì", uz: "qobiliyat", ru: "способность", en: "ability" },
+            { id: 5, hanzi: "招聘", pinyin: "zhāopìn", uz: "bo'sh ish o'rnini e'lon qilmoq", ru: "нанимать", en: "recruit" },
+            { id: 6, hanzi: "提供", pinyin: "tígōng", uz: "ta'minlamoq", ru: "предоставлять", en: "provide" },
+            { id: 7, hanzi: "负责", pinyin: "fùzé", uz: "mas'ul bo'lmoq", ru: "нести ответственность", en: "be responsible for" },
+            { id: 8, hanzi: "本来", pinyin: "běnlái", uz: "aslida, avvalo", ru: "изначально", en: "originally" },
+            { id: 9, hanzi: "应聘", pinyin: "yìngpìn", uz: "bo'sh ish o'rniga nomzodini bermoq", ru: "подавать заявление на работу", en: "apply for a job" },
+            { id: 10, hanzi: "材料", pinyin: "cáiliào", uz: "hujjat, material", ru: "материал", en: "material" },
+            { id: 11, hanzi: "符合", pinyin: "fúhé", uz: "mos", ru: "соответствовать", en: "conform to" },
+            { id: 12, hanzi: "通知", pinyin: "tōngzhī", uz: "e'lon qilmoq, xabar", ru: "уведомлять", en: "notify" },
+            { id: 13, hanzi: "律师", pinyin: "lǜshī", uz: "huquqshunos", ru: "адвокат", en: "lawyer" },
+            { id: 14, hanzi: "专业", pinyin: "zhuānyè", uz: "mutaxassislik, soha", ru: "специальность", en: "major, specialty" },
+            { id: 15, hanzi: "另外", pinyin: "lìngwài", uz: "boshqa, o'zga", ru: "кроме того", en: "besides, in addition" },
+            { id: 16, hanzi: "收入", pinyin: "shōurù", uz: "daromad, kirim", ru: "доход", en: "income" },
+            { id: 17, hanzi: "咱们", pinyin: "zánmen", uz: "bizlar", ru: "мы", en: "we" },
+            { id: 18, hanzi: "安排", pinyin: "ānpái", uz: "rejalashtirmoq, taqsimlamoq", ru: "планировать", en: "arrange" },
+            { id: 19, hanzi: "首先", pinyin: "shǒuxiān", uz: "avvalo, birinchi navbatda", ru: "во-первых", en: "first of all" },
+            { id: 20, hanzi: "正式", pinyin: "zhèngshì", uz: "rasmiy", ru: "официальный", en: "formal" },
+            { id: 21, hanzi: "留", pinyin: "liú", uz: "qoldirmoq, qolmoq", ru: "оставлять", en: "leave" },
+            { id: 22, hanzi: "其次", pinyin: "qícì", uz: "ikkinchi navbatda", ru: "во-вторых", en: "secondly" },
+            { id: 23, hanzi: "诚实", pinyin: "chéngshí", uz: "rostgo'y, samimiy", ru: "честный", en: "honest" },
+            { id: 24, hanzi: "改变", pinyin: "gǎibiàn", uz: "o'zgartirmoq", ru: "изменять", en: "change" },
+            { id: 25, hanzi: "感觉", pinyin: "gǎnjué", uz: "hissiyot, his-tuyg'u", ru: "чувство", en: "feeling" },
+            { id: 26, hanzi: "判断", pinyin: "pànduàn", uz: "qaror qilmoq, hukm chiqarmoq", ru: "судить", en: "judge" },
+            { id: 27, hanzi: "顾客", pinyin: "gùkè", uz: "xaridor, mijoz", ru: "клиент", en: "customer" },
+            { id: 28, hanzi: "准时", pinyin: "zhǔnshí", uz: "o'z vaqtida", ru: "вовремя", en: "on time" },
+            { id: 29, hanzi: "不管", pinyin: "bùguǎn", uz: "-ga qaramasdan", ru: "несмотря на", en: "no matter" },
+            { id: 30, hanzi: "与", pinyin: "yǔ", uz: "hamda, bilan", ru: "и, с", en: "and, with" },
+            { id: 31, hanzi: "约会", pinyin: "yuēhuì", uz: "uchrashuv", ru: "свидание", en: "appointment/date" }
+        ];
+
+        const DIALOGUES = [
             {
-                id: 1,
-                title: { cn: "肯定形式 (Tasdiq shakli)", uz: "\"得\" yordamchisi bilan tasdiq gaplar" },
-                description: { cn: "描述动作进行的程度或状态。", uz: "Harakatning bajarilish darajasini yoki holatini ifodalash." },
-                structures: [
-                    "Ega + Fe'l + 得 + (Ravish) + Sifat",
-                    "Ega + Fe'l + To'ld + Fe'l + 得 + (Ravish) + Sifat"
-                ],
-                examples: [
-                {
-                    structureType: "结构 1: Ega + Fe'l + 得 + Sifat",
-                    chars: ["他", "跑", "得", "快"],
-                    pinyin: ["Tā", "pǎo", "de", "kuài"],
-                    uzbek: ["U tez yuguradi"],
-                    roles: ["subject", "predicate", "particle", "adjective"]
-                },
-                {
-                    structureType: "结构 1: Ega + Fe'l + 得 + Sifat",
-                    chars: ["妹妹", "起", "得", "早"],
-                    pinyin: ["Mèimei", "qǐ", "de", "zǎo"],
-                    uzbek: ["Singlim erta turadi"],
-                    roles: ["subject", "predicate", "particle", "adjective"]
-                },
-                {
-                    structureType: "结构 1 (Ravish bilan): ... 得 + Ravish + Sifat",
-                    chars: ["我", "睡", "得", "也", "早"],
-                    pinyin: ["Wǒ", "shuì", "de", "yě", "zǎo"],
-                    uzbek: ["Men ham erta uxlayman"],
-                    roles: ["subject", "predicate", "particle", "adverb", "adjective"]
-                },
-                {
-                    structureType: "结构 2: Ega + Fe'l + To'ld + Fe'l + 得 + Sifat",
-                    chars: ["他", "学", "汉语", "学", "得", "好"],
-                    pinyin: ["Tā", "xué", "Hànyǔ", "xué", "de", "hǎo"],
-                    uzbek: ["U xitoy tilini yaxshi o'rganadi"],
-                    roles: ["subject", "predicate", "object", "predicate", "particle", "adjective"]
-                },
-                {
-                    structureType: "结构 2 (Ravish bilan): ... 得 + Ravish + Sifat",
-                    chars: ["我", "写", "汉字", "写", "得", "很", "好"],
-                    pinyin: ["Wǒ", "xiě", "Hànzì", "xiě", "de", "hěn", "hǎo"],
-                    uzbek: ["Men xitoy iyerogliflarini juda yaxshi yozaman"],
-                    roles: ["subject", "predicate", "object", "predicate", "particle", "adverb", "adjective"]
-                }
+                title: "1. 小夏和小雨聊小雨面试的情况",
+                lines: [
+                    { speaker: "小夏", hanzi: "你上午的面试怎么样？", pinyin: "Nǐ shàngwǔ de miànshì zěnmeyàng?", uz: "Ertalabki suhbatingiz qanday o'tdi?", ru: "Как прошло твое утреннее собеседование?", en: "How was your morning interview?" },
+                    { speaker: "小雨", hanzi: "还可以，他们问的问题都挺容易的，就是我有点儿紧张。", pinyin: "Hái kěyǐ, tāmen wèn de wèntí dōu tǐng róngyì de, jiù shì wǒ yǒudiǎnr jǐnzhāng.", uz: "Yomon emas, ular so'ragan savollar juda oson edi, faqat men biroz asabiylashdim.", ru: "Нормально, вопросы, которые они задавали, были довольно легкими, просто я немного нервничал.", en: "Not bad, the questions they asked were quite easy, it's just that I was a bit nervous." },
+                    { speaker: "小夏", hanzi: "面试的时候，一定要对自己有信心，要相信自己的能力。", pinyin: "Miànshì de shíhou, yídìng yào duì zìjǐ yǒu xìnxīn, yào xiāngxìn zìjǐ de nénglì.", uz: "Suhbat paytida, albatta o'zingizga ishonchingiz bo'lishi kerak, o'z qobiliyatingizga ishonishingiz kerak.", ru: "Во время собеседования нужно обязательно быть уверенным в себе, верить в свои способности.", en: "During an interview, you must have confidence in yourself and believe in your abilities." },
+                    { speaker: "小雨", hanzi: "你说的对！3月15号上午8点在学校体育馆还有一个招聘会，你去吗？", pinyin: "Nǐ shuō de duì! Sān yuè shíwǔ hào shàngwǔ bā diǎn zài xuéxiào tǐyùguǎn hái yǒu yí ge zhāopìnhuì, nǐ qù ma?", uz: "To'g'ri aytasiz! 15-mart kuni ertalab soat 8 da maktab sport zalida yana bitta ish yarmarkasi bor, borasizmi?", ru: "Ты прав! 15 марта в 8 утра в школьном спортзале будет еще одна ярмарка вакансий, ты пойдешь?", en: "You're right! On March 15th at 8 AM, there's another job fair at the school gym, are you going?" },
+                    { speaker: "小夏", hanzi: "我还没决定呢。", pinyin: "Wǒ hái méi juédìng ne.", uz: "Men hali bir qarorga kelmadim.", ru: "Я еще не решил.", en: "I haven't decided yet." },
+                    { speaker: "小雨", hanzi: "听说这次招聘会提供的工作机会很多，我们一起去看看吧。", pinyin: "Tīngshuō zhè cì zhāopìnhuì tígōng de gōngzuò jīhuì hěn duō, wǒmen yìqǐ qù kànkan ba.", uz: "Eshitishimcha, bu galgi ish yarmarkasi ko'plab ish imkoniyatlarini taqdim etar ekan, keling, birga borib ko'ramiz.", ru: "Слышал, эта ярмарка предоставит много возможностей, давай сходим вместе посмотрим.", en: "I heard this job fair offers many job opportunities, let's go check it out together." }
                 ]
             },
             {
-                id: 2,
-                title: { cn: "否定形式 (Inkor shakli)", uz: "\"得\" yordamchisi bilan inkor gaplar" },
-                description: { cn: "在形容词前加“不”表示否定。", uz: "Sifat oldiga \"bù\" qo'shib inkor yasaladi." },
-                structures: [
-                    "Ega + Fe'l + 得 + 不 + Sifat",
-                    "Ega + Fe'l + To'ld + Fe'l + 得 + 不 + Sifat"
-                ],
-                examples: [
-                {
-                    structureType: "结构 1: Ega + Fe'l + 得 + 不 + Sifat",
-                    chars: ["他", "跑", "得", "不", "快"],
-                    pinyin: ["Tā", "pǎo", "de", "bú", "kuài"],
-                    uzbek: ["U tez yugurmaydi"],
-                    roles: ["subject", "predicate", "particle", "negative", "adjective"]
-                },
-                {
-                    structureType: "结构 1: Ega + Fe'l + 得 + 不 + Sifat",
-                    chars: ["我", "住", "得", "不", "远"],
-                    pinyin: ["Wǒ", "zhù", "de", "bù", "yuǎn"],
-                    uzbek: ["Men uzoqda yashamayman"],
-                    roles: ["subject", "predicate", "particle", "negative", "adjective"]
-                },
-                {
-                    structureType: "结构 2: Ega + Fe'l + To'ld + Fe'l + 得 + 不 + Sifat",
-                    chars: ["她", "做", "饭", "做", "得", "不", "好"],
-                    pinyin: ["Tā", "zuò", "fàn", "zuò", "de", "bù", "hǎo"],
-                    uzbek: ["U ovqatni yaxshi pishirolmaydi"],
-                    roles: ["subject", "predicate", "object", "predicate", "particle", "negative", "adjective"]
-                },
-                {
-                    structureType: "结构 2: Ega + Fe'l + To'ld + ... + 得 + 不 + Sifat",
-                    chars: ["姐姐", "唱", "歌", "唱", "得", "不", "错"],
-                    pinyin: ["Jiějie", "chàng", "gē", "chàng", "de", "bú", "cuò"],
-                    uzbek: ["Opam qo'shiqni yomon aytmaydi (yaxshi aytadi)"],
-                    roles: ["subject", "predicate", "object", "predicate", "particle", "negative", "adjective"]
-                }
+                title: "2. 马经理和小林聊招聘的事情",
+                lines: [
+                    { speaker: "马经理", hanzi: "小林，这次招聘不是小李负责吗？", pinyin: "Xiǎo Lín, zhè cì zhāopìn bú shì Xiǎo Lǐ fùzé ma?", uz: "Siao Lin, bu galgi ishga qabul qilish bo'yicha Siao Li mas'ul emasmidi?", ru: "Сяо Линь, разве за этот набор персонала не Сяо Ли отвечает?", en: "Xiao Lin, wasn't Xiao Li responsible for this recruitment?" },
+                    { speaker: "小林", hanzi: "本来是小李负责的，但是他突然生病住院了，所以就交给我来做了。", pinyin: "Běnlái shì Xiǎo Lǐ fùzé de, dànshì tā tūrán shēngbìng zhùyuàn le, suǒyǐ jiù jiāogěi wǒ lái zuò le.", uz: "Aslida Siao Li mas'ul edi, lekin u to'satdan kasal bo'lib, kasalxonaga yotqizildi, shuning uchun bu ishni menga topshirishdi.", ru: "Изначально отвечал Сяо Ли, но он внезапно заболел и попал в больницу, поэтому передали мне.", en: "Originally Xiao Li was responsible, but he suddenly got sick and was hospitalized, so it was handed over to me." },
+                    { speaker: "马经理", hanzi: "哦，这次应聘的人多吗？", pinyin: "Ò, zhè cì yìngpìn de rén duō ma?", uz: "Oh, bu gal ishga kirmoqchi bo'lganlar ko'pmi?", ru: "О, в этот раз много желающих?", en: "Oh, are there many applicants this time?" },
+                    { speaker: "小林", hanzi: "经理，这次来应聘的一共有15人。经过笔试和面试，有两个不错。这是他们的材料，您看看。", pinyin: "Jīnglǐ, zhè cì lái yìngpìn de yígòng yǒu shíwǔ rén. Jīngguò bǐshì hé miànshì, yǒu liǎng ge búcuò. Zhè shì tāmen de cáiliào, nín kànkan.", uz: "Menejer, bu gal jami 15 kishi ish so'rab keldi. Yozma imtihon va suhbatdan so'ng, ikkitasi yomon emas. Mana ularning hujjatlari, ko'rib chiqing.", ru: "Менеджер, в этот раз всего 15 человек. После письменного теста и собеседования двое неплохие. Вот их материалы, посмотрите.", en: "Manager, there are a total of 15 applicants this time. After the written test and interview, two are quite good. Here are their materials, please take a look." },
+                    { speaker: "马经理", hanzi: "这两个人的能力都比较符合我们的要求。你通知他们下周一上午九点来我办公室吧。", pinyin: "Zhè liǎng ge rén de nénglì dōu bǐjiào fúhé wǒmen de yāoqiú. Nǐ tōngzhī tāmen xià zhōuyī shàngwǔ jiǔ diǎn lái wǒ bàngōngshì ba.", uz: "Bu ikki kishining qobiliyati bizning talablarimizga ko'proq mos keladi. Ularga xabar bering, kelasi dushanba ertalab soat to'qqizda mening ofisimga kelishsin.", ru: "Способности этих двоих довольно хорошо соответствуют нашим требованиям. Сообщи им, пусть придут ко мне в офис в следующий понедельник в девять утра.", en: "Both of their abilities match our requirements quite well. Notify them to come to my office next Monday at 9 AM." },
+                    { speaker: "小林", hanzi: "好的，那我马上跟他们联系。", pinyin: "Hǎo de, nà wǒ mǎshàng gēn tāmen liánxì.", uz: "Yaxshi, men darhol ular bilan bog'lanaman.", ru: "Хорошо, я немедленно с ними свяжусь.", en: "Okay, I will contact them right away." }
                 ]
             },
             {
-                id: 3,
-                title: { cn: "比较结构 (Solishtirish)", uz: "\"比\" va \"得\" ishtirokida solishtirish" },
-                description: { cn: "结合“比”字句和“得”字句进行比较。", uz: "\"Bi\" (qaraganda) va \"De\" yordamchilarini birga ishlatish." },
-                structures: [
-                    "A 比 B + Fe'l + 得 + Sifat",
-                    "A + Fe'l + 得 + 比 B + Sifat"
-                ],
-                examples: [
-                {
-                    structureType: "结构 1: A 比 B + Fe'l + 得 + Sifat",
-                    chars: ["哥哥", "比", "弟弟", "跑", "得", "快"],
-                    pinyin: ["Gēge", "bǐ", "dìdi", "pǎo", "de", "kuài"],
-                    uzbek: ["Aka ukasidan tezroq yuguradi"],
-                    roles: ["subject", "comparison", "object", "predicate", "particle", "adjective"]
-                },
-                {
-                    structureType: "结构 1: A 比 B + Fe'l + 得 + Sifat",
-                    chars: ["我", "妻子", "比", "我", "做", "得", "好"],
-                    pinyin: ["Wǒ qīzi", "bǐ", "wǒ", "zuò", "de", "hǎo"],
-                    uzbek: ["Xotinim mendan yaxshiroq bajaradi"],
-                    roles: ["subject", "comparison", "object", "predicate", "particle", "adjective"]
-                },
-                {
-                    structureType: "结构 2: A + Fe'l + 得 + 比 B + Sifat",
-                    chars: ["他", "跑", "得", "比", "我", "快"],
-                    pinyin: ["Tā", "pǎo", "de", "bǐ", "wǒ", "kuài"],
-                    uzbek: ["U mendan tezroq yuguradi"],
-                    roles: ["subject", "predicate", "particle", "comparison", "object", "adjective"]
-                }
+                title: "3. 小林和王静聊王静的工作情况",
+                lines: [
+                    { speaker: "小林", hanzi: "王静，好久不见了！大学毕业后就没联系了，你现在在哪儿工作呢？", pinyin: "Wáng Jìng, hǎojiǔ bú jiàn le! Dàxué bìyè hòu jiù méi liánxì le, nǐ xiànzài zài nǎr gōngzuò ne?", uz: "Van Szin, ko'rishmaganimizga ancha bo'ldi! Universitetni bitirgandan keyin aloqani uzdik, hozir qayerda ishlayapsan?", ru: "Ван Цзин, давно не виделись! После окончания университета не общались, где ты сейчас работаешь?", en: "Wang Jing, long time no see! We haven't kept in touch since college graduation, where are you working now?" },
+                    { speaker: "王静", hanzi: "我一毕业就去上海当律师了。", pinyin: "Wǒ yī bìyè jiù qù Shànghǎi dāng lǜshī le.", uz: "Men bitirishim bilanoq Shanxayga advokat bo'lib ishga ketdim.", ru: "Сразу после выпуска я поехала в Шанхай работать адвокатом.", en: "As soon as I graduated, I went to Shanghai to work as a lawyer." },
+                    { speaker: "小林", hanzi: "你对现在的工作一定非常满意吧？", pinyin: "Nǐ duì xiànzài de gōngzuò yídìng fēicháng mǎnyì ba?", uz: "Siz hozirgi ishingizdan juda mamnun bo'lsangiz kerak-a?", ru: "Ты, наверное, очень довольна своей нынешней работой?", en: "You must be very satisfied with your current job, right?" },
+                    { speaker: "王静", hanzi: "我很喜欢现在的工作，因为我学的就是法律专业，而且同事们都很喜欢我。另外，收入也不错。", pinyin: "Wǒ hěn xǐhuan xiànzài de gōngzuò, yīnwèi wǒ xué de jiù shì fǎlǜ zhuānyè, érqiě tóngshìmen dōu hěn xǐhuan wǒ. Lìngwài, shōurù yě búcuò.", uz: "Menga hozirgi ishim juda yoqadi, chunki men aynan huquq mutaxassisligi bo'yicha o'qiganman va hamkasblarim ham meni juda yaxshi ko'rishadi. Bundan tashqari, daromadi ham yomon emas.", ru: "Мне очень нравится моя нынешняя работа, потому что я училась на юриста, и коллеги меня любят. Кроме того, доход тоже неплохой.", en: "I really like my current job because I studied law, and my colleagues like me a lot. Plus, the income is not bad." },
+                    { speaker: "小林", hanzi: "星期天咱们同学聚会，你能来参加吗？", pinyin: "Xīngqītiān zánmen tóngxué jùhuì, nǐ néng lái cānjiā ma?", uz: "Yakshanba kuni sinfdoshlar uchrashuvi bo'ladi, qatnasha olasizmi?", ru: "В воскресенье у нас встреча однокурсников, сможешь прийти?", en: "We are having a class reunion on Sunday, can you come?" },
+                    { speaker: "王静", hanzi: "能来。虽然这次来北京，时间安排得很紧张，但我一定借这次机会去跟大家见见面。", pinyin: "Néng lái. Suīrán zhè cì lái Běijīng, shíjiān ānpái de hěn jǐnzhāng, dàn wǒ yídìng jiè zhè cì jīhuì qù gēn dàjiā jiànjiàn miàn.", uz: "Kela olaman. Garchi bu safar Pekinga kelishimda vaqt juda tig'iz rejalashtirilgan bo'lsa ham, men albatta shu imkoniyatdan foydalanib, hamma bilan ko'rishaman.", ru: "Смогу. Хотя в этот приезд в Пекин времени в обрез, я обязательно воспользуюсь этой возможностью, чтобы увидеться со всеми.", en: "I can. Although my schedule is very tight this time in Beijing, I will definitely take this opportunity to meet everyone." }
+                ]
+            },
+            {
+                title: "4. 面试技巧",
+                lines: [
+                    { speaker: "独白", hanzi: "面试的时候，经理对我印象不错，还通知我明天就可以上班了。", pinyin: "Miànshì de shíhou, jīnglǐ duì wǒ yìnxiàng búcuò, hái tōngzhī wǒ míngtiān jiù kěyǐ shàngbān le.", uz: "Suhbat paytida, menejerda menda yaxshi taassurot qoldi, va ertagayoq ishga chiqishim mumkinligini ma'lum qildi.", ru: "Во время собеседования я произвел хорошее впечатление на менеджера, и он сообщил, что я могу выйти на работу уже завтра.", en: "During the interview, I left a good impression on the manager, and he informed me I could start work tomorrow." },
+                    { speaker: "独白", hanzi: "真没想到，找工作这么顺利。", pinyin: "Zhēn méi xiǎngdào, zhǎo gōngzuò zhème shùnlì.", uz: "Ish topish bunchalik oson kechadi deb o'ylamagandim.", ru: "Даже не думал, что поиск работы пройдет так гладко.", en: "I really didn't expect finding a job to go so smoothly." },
+                    { speaker: "独白", hanzi: "你想知道面试需要注意什么吗？", pinyin: "Nǐ xiǎng zhīdào miànshì xūyào zhùyì shénme ma?", uz: "Suhbat paytida nimalarga e'tibor berish kerakligini bilishni xohlaysizmi?", ru: "Хочешь узнать, на что нужно обращать внимание при собеседовании?", en: "Do you want to know what to pay attention to during an interview?" },
+                    { speaker: "独白", hanzi: "首先，要穿正式的衣服，这会给面试者留下一个好的印象，让他觉得你是一个认真的人。", pinyin: "Shǒuxiān, yào chuān zhèngshì de yīfu, zhè huì gěi miànshìzhě liúxià yí ge hǎo de yìnxiàng, ràng tā juéde nǐ shì yí ge rènzhēn de rén.", uz: "Avvalo, rasmiy kiyim kiyish kerak, bu suhbatdoshda yaxshi taassurot qoldiradi va sizni jiddiy inson deb o'ylashiga sabab bo'ladi.", ru: "Во-первых, нужно одеться официально, это оставит хорошее впечатление и покажет, что вы серьезный человек.", en: "First of all, you should wear formal clothes; this will leave a good impression on the interviewer and make them think you are a serious person." },
+                    { speaker: "独白", hanzi: "其次，应聘时不要紧张。", pinyin: "Qícì, yìngpìn shí búyào jǐnzhāng.", uz: "Ikkinchidan, ishga qabul qilinishda asabiylashmang.", ru: "Во-вторых, не нервничайте при найме.", en: "Secondly, don't be nervous when applying." },
+                    { speaker: "独白", hanzi: "回答问题时，说得不要太快，声音也不要太小，要相信自己有能力做好。", pinyin: "Huídá wèntí shí, shuō de búyào tài kuài, shēngyīn yě búyào tài xiǎo, yào xiāngxìn zìjǐ yǒu nénglì zuò hǎo.", uz: "Savollarga javob berayotganda, juda tez gapirmang, ovozingiz ham juda past bo'lmasin, ishni yaxshi bajara olishingizga o'zingiz ishoning.", ru: "Отвечая на вопросы, не говорите слишком быстро или слишком тихо, верьте в свою способность справиться.", en: "When answering questions, don't speak too fast, and your voice shouldn't be too soft; believe in your ability to do well." },
+                    { speaker: "独白", hanzi: "当然，最重要的是回答问题要诚实。", pinyin: "Dāngrán, zuì zhòngyào de shì huídá wèntí yào chéngshí.", uz: "Albatta, eng muhimi savollarga halol (rostgo'y) javob berishdir.", ru: "Конечно, самое главное - честно отвечать на вопросы.", en: "Of course, the most important thing is to be honest when answering questions." }
+                ]
+            },
+            {
+                title: "5. 第一印象",
+                lines: [
+                    { speaker: "独白", hanzi: "第一印象就是在第一次见面时给别人留下的印象。", pinyin: "Dì yī yìnxiàng jiù shì zài dì yī cì jiànmiàn shí gěi biérén liúxià de yìnxiàng.", uz: "Birinchi taassurot bu birinchi uchrashuvda boshqalarda qoldirgan taassurotdir.", ru: "Первое впечатление - это впечатление, которое вы оставляете при первой встрече.", en: "First impression is the impression left on others during the first meeting." },
+                    { speaker: "独白", hanzi: "虽然第一印象不总是对的，但如果想改变却很困难。", pinyin: "Suīrán dì yī yìnxiàng bù zǒng shì duì de, dàn rúguǒ xiǎng gǎibiàn què hěn kùnnan.", uz: "Garchi birinchi taassurot har doim ham to'g'ri bo'lmasa-da, uni o'zgartirish juda qiyin.", ru: "Хотя первое впечатление не всегда верное, изменить его очень трудно.", en: "Although the first impression is not always right, it is very difficult to change." },
+                    { speaker: "独白", hanzi: "你给别人的第一印象会影响他们以后对你的感觉和判断。", pinyin: "Nǐ gěi biérén de dì yī yìnxiàng huì yǐngxiǎng tāmen yǐhòu duì nǐ de gǎnjué hé pànduàn.", uz: "Sizning boshqalarda qoldirgan birinchi taassurotingiz, ularning keyinchalik siz haqingizdagi his-tuyg'ulari va qarorlariga ta'sir qiladi.", ru: "Ваше первое впечатление повлияет на их дальнейшие чувства и суждения о вас.", en: "The first impression you give others will affect their feelings and judgments about you in the future." },
+                    { speaker: "独白", hanzi: "所以，给第一次见面的同事留下好的印象，以后的工作可能会更顺利；", pinyin: "Suǒyǐ, gěi dì yī cì jiànmiàn de tóngshì liúxià hǎo de yìnxiàng, yǐhòu de gōngzuò kěnéng huì gèng shùnlì;", uz: "Shuning uchun, birinchi marta ko'rishayotgan hamkasbda yaxshi taassurot qoldirsangiz, kelgusidagi ishlar osonroq kechishi mumkin;", ru: "Поэтому, если оставить хорошее впечатление у коллег при первой встрече, дальнейшая работа может пойти более гладко;", en: "Therefore, leaving a good impression on colleagues you meet for the first time might make future work smoother;" },
+                    { speaker: "独白", hanzi: "给第一次见面的顾客留下好的印象，你可能会卖出更多的东西。", pinyin: "Gěi dì yī cì jiànmiàn de gùkè liúxià hǎo de yìnxiàng, nǐ kěnéng huì màichū gèng duō de dōngxi.", uz: "Birinchi marta ko'rishayotgan mijozda yaxshi taassurot qoldirsangiz, ko'proq narsa sotishingiz mumkin.", ru: "Оставив хорошее впечатление у клиента при первой встрече, вы, возможно, продадите больше.", en: "Leaving a good impression on customers you meet for the first time might help you sell more things." },
+                    { speaker: "独白", hanzi: "但是，如果第一次见面给别人留下像不准时这样的坏印象，那么以后就很难让别人相信你。", pinyin: "Dànshì, rúguǒ dì yī cì jiànmiàn gěi biérén liúxià xiàng bù zhǔnshí zhèyàng de huài yìnxiàng, nàme yǐhòu jiù hěn nán ràng biérén xiāngxìn nǐ.", uz: "Lekin, agar birinchi uchrashuvda kechikish kabi yomon taassurot qoldirsangiz, keyinchalik odamlarni sizga ishonishiga undash juda qiyin bo'ladi.", ru: "Но если при первой встрече оставить плохое впечатление, например, опоздав, то потом будет трудно заставить людей поверить вам.", en: "However, if you leave a bad impression like being unpunctual during the first meeting, it will be very difficult to make others believe you later." },
+                    { speaker: "独白", hanzi: "所以不管是上课、上班，还是与别人约会，准时都非常重要。", pinyin: "Suǒyǐ bùguǎn shì shàngkè, shàngbān, háishì yǔ biérén yuēhuì, zhǔnshí dōu fēicháng zhòngyào.", uz: "Shuning uchun darsga, ishga yoki boshqalar bilan uchrashuvga bo'ladimi, o'z vaqtida kelish juda muhimdir.", ru: "Поэтому, будь то учеба, работа или свидание, быть вовремя очень важно.", en: "So no matter if it's attending class, working, or having an appointment with others, being on time is very important." }
                 ]
             }
         ];
 
-        // --- SVG Component ---
+        const GRAMMAR = [
+            {
+                title: "1. 挺 (tǐng)",
+                explanation: {
+                    uz: "Ravish. 'Juda' degan ma'noni bildiradi. Odatda '挺...的' (tǐng...de) shaklida ishlatiladi.",
+                    ru: "Наречие. Означает 'очень'. Обычно используется в конструкции '挺...的' (tǐng...de).",
+                    en: "Adverb. Means 'very'. Usually used in the structure '挺...的' (tǐng...de)."
+                },
+                examples: [
+                    { hanzi: "他们问的问题都挺容易的。", pinyin: "Tāmen wèn de wèntí dōu tǐng róngyì de.", uz: "Ular so'ragan savollar juda oson edi." },
+                    { hanzi: "这家店的东西挺好的。", pinyin: "Zhè jiā diàn de dōngxi tǐng hǎo de.", uz: "Bu do'konning narsalari juda yaxshi." }
+                ]
+            },
+            {
+                title: "2. 本来 (běnlái)",
+                explanation: {
+                    uz: "Ravish. 'Aslida, avvalo, boshidan' kabi ma'nolarni bildiradi.",
+                    ru: "Наречие. Означает 'изначально, на самом деле'.",
+                    en: "Adverb. Means 'originally, at first'."
+                },
+                examples: [
+                    { hanzi: "这件事本来应该听他的。", pinyin: "Zhè jiàn shì běnlái yīnggāi tīng tā de.", uz: "Bu masalada aslida unga quloq solish kerak edi." },
+                    { hanzi: "这次招聘本来是小李负责的。", pinyin: "Zhè cì zhāopìn běnlái shì Xiǎo Lǐ fùzé de.", uz: "Bu ishga qabul qilish uchun aslida Siao Li mas'ul edi." }
+                ]
+            },
+            {
+                title: "3. 另外 (lìngwài)",
+                explanation: {
+                    uz: "Olmosh, ravish yoki bog'lovchi. 'Boshqa, undan tashqari' degan ma'noni anglatadi.",
+                    ru: "Местоимение, наречие или союз. Означает 'кроме того, другой'.",
+                    en: "Pronoun, adverb, or conjunction. Means 'besides, in addition, other'."
+                },
+                examples: [
+                    { hanzi: "我们走另外一条路吧。", pinyin: "Wǒmen zǒu lìngwài yì tiáo lù ba.", uz: "Keling, boshqa yo'ldan ketamiz." },
+                    { hanzi: "另外，收入也不错。", pinyin: "Lìngwài, shōurù yě búcuò.", uz: "Bundan tashqari, daromadi ham yomon emas." }
+                ]
+            },
+            {
+                title: "4. 首先...其次... (shǒuxiān... qícì...)",
+                explanation: {
+                    uz: "Biror narsalarni sanab o'tishda ishlatiladi: 'Avvalo (birinchi navbatda)..., ikkinchidan...'.",
+                    ru: "Используется для перечисления: 'Во-первых..., во-вторых...'.",
+                    en: "Used for listing items: 'Firstly..., secondly...'."
+                },
+                examples: [
+                    { hanzi: "首先你要明白为什么做，其次要知道怎么做。", pinyin: "Shǒuxiān nǐ yào míngbai wèishénme zuò, qícì yào zhīdào zěnme zuò.", uz: "Avvalo nega bunday qilayotganingizni tushunishingiz kerak, ikkinchidan qanday qilishni bilishingiz kerak." }
+                ]
+            },
+            {
+                title: "5. 不管 (bùguǎn)",
+                explanation: {
+                    uz: "Bog'lovchi. 'Nima bo'lishidan qat'iy nazar, -ga qaramasdan' ma'nosini beradi. Odatda '都/也' bilan keladi.",
+                    ru: "Союз. Означает 'несмотря на, независимо от'. Обычно используется с '都/也'.",
+                    en: "Conjunction. Means 'no matter, regardless of'. Usually paired with '都/也'."
+                },
+                examples: [
+                    { hanzi: "不管是上课还是上班，准时都非常重要。", pinyin: "Bùguǎn shì shàngkè háishì shàngbān, zhǔnshí dōu fēicháng zhòngyào.", uz: "Darsga yoki ishga bo'lishidan qat'iy nazar, o'z vaqtida kelish juda muhimdir." }
+                ]
+            }
+        ];
 
-        const GrammarTree = ({ example, animate }) => {
-            const width = 850;
-            const height = 350;
-            const startY = 50; 
-            const endY = 220; 
-            
-            const count = example.roles.length;
-            const spacing = width / (count + 1);
-            
-            const nodes = example.roles.map((role, index) => {
-                const x = spacing * (index + 1);
-                const term = GRAMMAR_TERMS[role] || { cn: "未知", uz: "Noma'lum", color: "#ccc" };
-                return {
-                    x,
-                    y: endY,
-                    role: role,
-                    char: example.chars[index],
-                    pinyin: example.pinyin[index],
-                    color: term.color,
-                    cnTerm: term.cn,
-                    uzTerm: term.uz
-                };
-            });
+        const GRAMMAR_TEST = [
+            { q: "这个问题____难的。", options: ["挺", "很", "非常", "真"], ans: "挺" },
+            { q: "____是小李负责的，但是他生病了。", options: ["本来", "另外", "首先", "其次"], ans: "本来" },
+            { q: "我学的是法律专业，____收入也不错。", options: ["另外", "本来", "挺", "不管"], ans: "另外" },
+            { q: "面试时____要穿正式的衣服。", options: ["首先", "其次", "另外", "本来"], ans: "首先" },
+            { q: "____多忙，他每天都锻炼身体。", options: ["不管", "虽然", "但是", "另外"], ans: "不管" },
+            { q: "这件衣服有点儿大，你试试____的那件吧。", options: ["另外", "本来", "挺", "首先"], ans: "另外" },
+            { q: "找工作，____要知道自己喜欢什么，其次要知道自己能做什么。", options: ["首先", "不管", "本来", "另外"], ans: "首先" },
+            { q: "我____不会开车，但现在开得特别好。", options: ["本来", "另外", "首先", "其次"], ans: "本来" },
+            { q: "他____做什么事都非常认真。", options: ["不管", "另外", "本来", "首先"], ans: "不管" },
+            { q: "那个房间又安静又干净，____好的。", options: ["挺", "真", "太", "极"], ans: "挺" },
+            { q: "家里的空调坏了，咱们____再买一个吧。", options: ["另外", "本来", "不管", "其次"], ans: "另外" },
+            { q: "聚会需要买一些水果，____再准备一些啤酒。", options: ["另外", "挺", "首先", "不管"], ans: "另外" },
+            { q: "____是上课还是上班，准时都非常重要。", options: ["不管", "另外", "本来", "其次"], ans: "不管" },
+            { q: "遇到不明白的地方，____想到的是上网查一查。", options: ["首先", "另外", "挺", "本来"], ans: "首先" },
+            { q: "他不但帮我们解决了问题，还____提供了新材料。", options: ["另外", "不管", "其次", "本来"], ans: "另外" }
+        ];
 
-            return (
-                <div className="min-w-[600px] h-full">
-                    <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-full bg-slate-50 rounded-xl border border-slate-200 shadow-inner">
-                        <defs>
-                        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
-                        </marker>
-                        </defs>
-                        <g transform={`translate(${width / 2}, ${startY})`}>
-                        <circle r="30" fill="#475569" className={animate ? "animate-pulse" : ""} />
-                        <text y="5" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold">Gap</text>
-                        <text y="-40" textAnchor="middle" fill="#64748b" fontSize="14">句子</text>
-                        </g>
-                        {nodes.map((node, i) => (
-                        <g key={i} className="transition-all duration-500 ease-in-out">
-                            <path
-                            d={`M${width / 2} ${startY + 30} C ${width / 2} ${startY + 100}, ${node.x} ${node.y - 100}, ${node.x} ${node.y - 50}`}
-                            fill="none"
-                            stroke={node.color}
-                            strokeWidth="2"
-                            strokeDasharray={animate ? "5,5" : "0"}
-                            opacity="0.6"
-                            className={animate ? "animate-dash" : ""}
-                            />
-                            {/* Increased bubble width to 100 for Uzbek text */}
-                            <g transform={`translate(${node.x}, ${node.y - 70})`}>
-                            <rect x="-50" y="-18" width="100" height="36" rx="18" fill={node.color} className="shadow-sm" />
-                            <text y="4" textAnchor="middle" fill="white" fontSize="11" fontWeight="bold">{node.uzTerm}</text>
-                            <text y="-24" textAnchor="middle" fill={node.color} fontSize="11" fontWeight="bold">{node.cnTerm}</text>
-                            </g>
-                            <g transform={`translate(${node.x}, ${node.y})`}>
-                            <rect x="-40" y="-25" width="80" height="65" rx="8" fill="white" stroke={node.color} strokeWidth="2" className="shadow-sm" />
-                            <text y="5" textAnchor="middle" fontSize="22" fontWeight="bold" fill="#1e293b">{node.char}</text>
-                            <text y="30" textAnchor="middle" fontSize="12" fill="#64748b">{node.pinyin}</text>
-                            </g>
-                        </g>
-                        ))}
-                    </svg>
-                </div>
-            );
+        const FILL_BLANKS = [
+            { parts: ["这个包", "漂亮的。"], ans: "挺", id: 1 },
+            { parts: ["第一次去他家，我有点儿", "。"], ans: "紧张", id: 2 },
+            { parts: ["你要对自己有", "，相信自己的能力。"], ans: "信心", id: 3 },
+            { parts: ["你要对自己有信心，相信自己的", "。"], ans: "能力", id: 4 },
+            { parts: ["我们公司正在", "新员工。"], ans: "招聘", id: 5 },
+            { parts: ["这家酒店", "免费的早餐。"], ans: "提供", id: 6 },
+            { parts: ["这次会议由小李", "。"], ans: "负责", id: 7 },
+            { parts: ["我", "想去北京，但现在没时间了。"], ans: "本来", id: 8 },
+            { parts: ["明天有十个人来", "这个职位。"], ans: "应聘", id: 9 },
+            { parts: ["请准备好你的所有", "。"], ans: "材料", id: 10 },
+            { parts: ["你的条件不", "我们的要求。"], ans: "符合", id: 11 },
+            { parts: ["经理让我", "你明天来上班。"], ans: "通知", id: 12 },
+            { parts: ["他的工作是一名", "。"], ans: "律师", id: 13 },
+            { parts: ["他大学的", "是历史。"], ans: "专业", id: 14 },
+            { parts: ["这个菜很好吃，", "，它的价格也不贵。"], ans: "另外", id: 15 },
+            { parts: ["他每月的", "有一万块。"], ans: "收入", id: 16 },
+            { parts: ["周末", "一起去爬山吧。"], ans: "咱们", id: 17 },
+            { parts: ["公司", "他去上海出差。"], ans: "安排", id: 18 },
+            { parts: ["学汉语，", "要多听，其次要多说。"], ans: "首先", id: 19 },
+            { parts: ["学汉语，首先要多听，", "要多说。"], ans: "其次", id: 20 },
+            { parts: ["参加面试时要穿", "的衣服。"], ans: "正式", id: 21 },
+            { parts: ["请在这里", "下你的电话号码。"], ans: "留", id: 22 },
+            { parts: ["做人一定要", "。"], ans: "诚实", id: 23 },
+            { parts: ["结婚后，他", "了很多。"], ans: "改变", id: 24 },
+            { parts: ["我对这个城市的", "很好。"], ans: "感觉", id: 25 },
+            { parts: ["不要很快对一个人做出", "。"], ans: "判断", id: 26 },
+            { parts: ["服务员应该对", "热情。"], ans: "顾客", id: 27 },
+            { parts: ["请大家明天上午八点", "到公司。"], ans: "准时", id: 28 },
+            { parts: ["", "天气好不好，我每天都去跑步。"], ans: "不管", id: 29 },
+            { parts: ["这个问题", "你没关系。"], ans: "与", id: 30 },
+            { parts: ["我今晚跟女朋友有个", "。"], ans: "约会", id: 31 }
+        ];
+
+        // --- UTILS ---
+        const playAudio = (text) => {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                window.speechSynthesis.speak(utterance);
+            }
         };
 
-        // --- Main App Component ---
+        const shuffleArray = (array) => {
+            const newArr = [...array];
+            for (let i = newArr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
+            }
+            return newArr;
+        };
 
-        function ChineseGrammarApp() {
-            const [activeTab, setActiveTab] = useState('learn');
-            const [currentLessonId, setCurrentLessonId] = useState(1);
-            const [currentExampleIndex, setCurrentExampleIndex] = useState(0);
-            const [animateDiagram, setAnimateDiagram] = useState(false);
+        // --- UI LOGIC ---
+        let activeTab = 'vocab';
 
-            // For Practice Mode
-            const [practiceSentence, setPracticeSentence] = useState([]);
-            const [feedback, setFeedback] = useState(null); 
-            
-            const currentLesson = LESSONS.find(l => l.id === currentLessonId);
-            const currentExample = currentLesson.examples[currentExampleIndex];
+        const TABS = [
+            { id: 'vocab', label: "Lug'at", icon: "fa-book-open" },
+            { id: 'vocabTest', label: "Lug'at testi", icon: "fa-graduation-cap" },
+            { id: 'dialogue', label: "Muloqot", icon: "fa-comments" },
+            { id: 'grammar', label: "Grammatika", icon: "fa-file-alt" },
+            { id: 'grammarTest', label: "Grammatika testi", icon: "fa-check-square" },
+            { id: 'fillBlanks', label: "So'zlarni to'ldirish", icon: "fa-pen-to-square" },
+        ];
 
-            useEffect(() => {
-                setAnimateDiagram(true);
-                const timer = setTimeout(() => setAnimateDiagram(false), 1000);
-                return () => clearTimeout(timer);
-            }, [currentExample, currentLessonId]);
-
-            const practiceWords = [
-                { id: 1, char: "他", pinyin: "Tā", role: "subject", color: GRAMMAR_TERMS.subject.color },
-                { id: 2, char: "跑", pinyin: "pǎo", role: "predicate", color: GRAMMAR_TERMS.predicate.color },
-                { id: 3, char: "得", pinyin: "de", role: "particle", color: GRAMMAR_TERMS.particle.color },
-                { id: 4, char: "快", pinyin: "kuài", role: "adjective", color: GRAMMAR_TERMS.adjective.color },
-                { id: 5, char: "不", pinyin: "bù", role: "negative", color: GRAMMAR_TERMS.negative.color },
-                { id: 6, char: "比", pinyin: "bǐ", role: "comparison", color: GRAMMAR_TERMS.comparison.color },
-                { id: 7, char: "我", pinyin: "wǒ", role: "object", color: GRAMMAR_TERMS.object.color }, 
-                { id: 8, char: "很", pinyin: "hěn", role: "adverb", color: GRAMMAR_TERMS.adverb.color },
-                { id: 9, char: "说", pinyin: "shuō", role: "predicate", color: GRAMMAR_TERMS.predicate.color },
-                { id: 10, char: "做", pinyin: "zuò", role: "predicate", color: GRAMMAR_TERMS.predicate.color },
-                { id: 11, char: "学", pinyin: "xué", role: "predicate", color: GRAMMAR_TERMS.predicate.color },
-                { id: 12, char: "好", pinyin: "hǎo", role: "adjective", color: GRAMMAR_TERMS.adjective.color },
-                { id: 13, char: "慢", pinyin: "màn", role: "adjective", color: GRAMMAR_TERMS.adjective.color },
-                { id: 14, char: "早", pinyin: "zǎo", role: "adjective", color: GRAMMAR_TERMS.adjective.color },
-            ];
-
-            const addToPractice = (word) => {
-                const newWord = { ...word, uniqueId: Date.now() + Math.random() }; 
-                setPracticeSentence([...practiceSentence, newWord]);
-                setFeedback(null);
-            };
-
-            const removeFromPractice = (uniqueId) => {
-                setPracticeSentence(practiceSentence.filter(w => w.uniqueId !== uniqueId));
-                setFeedback(null);
-            };
-
-            const clearPractice = () => {
-                setPracticeSentence([]);
-                setFeedback(null);
-            };
-
-            const checkSentence = () => {
-                if (practiceSentence.length === 0) {
-                setFeedback({ type: 'error', msgCn: '请先选择词语', msgUz: "Iltimos so'zlarni tanlang" });
-                return;
-                }
-
-                const deIndex = practiceSentence.findIndex(w => w.char === '得');
-
-                if (deIndex === -1) {
-                setFeedback({ type: 'error', msgCn: '句子必须包含“得”字', msgUz: "Gapda \"de\" qatnashishi shart" });
-                return;
-                }
-
-                if (deIndex === 0) {
-                setFeedback({ type: 'error', msgCn: '“得”字不能在开头', msgUz: "\"De\" gap boshida kelmaydi" });
-                return;
-                }
-                if (deIndex === practiceSentence.length - 1) {
-                setFeedback({ type: 'error', msgCn: '句子未完成', msgUz: "Gap tugallanmagan" });
-                return;
-                }
-
-                const beforeWord = practiceSentence[deIndex - 1];
-                if (beforeWord.role !== 'predicate') {
-                setFeedback({ 
-                    type: 'error', 
-                    msgCn: `“得”字前面应该是动词，而不是“${beforeWord.char}”`, 
-                    msgUz: `"De" dan oldin fe'l kelishi kerak ("${beforeWord.char}" emas)` 
-                });
-                return;
-                }
-
-                const afterWord = practiceSentence[deIndex + 1];
-                const validAfterRoles = ['adjective', 'adverb', 'negative', 'comparison'];
-                
-                if (!validAfterRoles.includes(afterWord.role)) {
-                setFeedback({ 
-                    type: 'error', 
-                    msgCn: `“得”字后面通常接形容词、否定词或比较词`, 
-                    msgUz: `"De" dan keyin sifat, inkor yoki solishtirish so'zi kelishi kerak` 
-                });
-                return;
-                }
-
-                setFeedback({ type: 'success', msgCn: '做得好！句子结构正确。', msgUz: "Barakalla! Gap tuzilishi to'g'ri." });
-            };
-
-            return (
-                <div className="min-h-screen bg-slate-50 font-sans text-slate-800 pb-8">
-                {/* Mobile-optimized Header */}
-                <header className="bg-blue-600 text-white p-3 sm:p-4 shadow-lg sticky top-0 z-10">
-                    <div className="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0">
-                    <div className="text-center sm:text-left w-full sm:w-auto">
-                        <h1 className="text-lg sm:text-2xl font-bold flex items-center justify-center sm:justify-start gap-2">
-                        <BookOpen size={20} className="sm:w-6 sm:h-6 flex-shrink-0" />
-                        <span className="truncate">Xitoy tili grammatikasi: "得" yordamchisi</span>
-                        </h1>
-                        <p className="text-blue-100 text-xs sm:text-sm truncate">Dilfuza Kāng lǎo shī bilan xitoy tilini o'rganmiz</p>
-                    </div>
-                    <div className="flex gap-2 w-full sm:w-auto">
-                        <button 
-                        onClick={() => setActiveTab('learn')}
-                        className={`flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium text-sm sm:text-base transition text-center ${activeTab === 'learn' ? 'bg-white text-blue-600 shadow' : 'bg-blue-700 text-white hover:bg-blue-600'}`}
-                        >
-                        学习 (O'rganish)
-                        </button>
-                        <button 
-                        onClick={() => { setActiveTab('practice'); setFeedback(null); }}
-                        className={`flex-1 sm:flex-none px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium text-sm sm:text-base transition text-center ${activeTab === 'practice' ? 'bg-white text-blue-600 shadow' : 'bg-blue-700 text-white hover:bg-blue-600'}`}
-                        >
-                        练习 (Mashq)
-                        </button>
-                    </div>
-                    </div>
-                </header>
-
-                <main className="max-w-5xl mx-auto p-3 sm:p-4">
-                    
-                    {activeTab === 'learn' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-                        
-                        {/* Sidebar */}
-                        <div className="lg:col-span-1 space-y-3 lg:sticky lg:top-24 h-fit">
-                        <h2 className="text-base sm:text-lg font-semibold text-slate-700 mb-2 flex items-center gap-2">
-                            <Layout size={18} /> 课程列表 (Mavzular)
-                        </h2>
-                        <div className="flex flex-col gap-2">
-                            {LESSONS.map(lesson => (
-                            <button
-                                key={lesson.id}
-                                onClick={() => {
-                                setCurrentLessonId(lesson.id);
-                                setCurrentExampleIndex(0);
-                                }}
-                                className={`w-full text-left p-3 sm:p-4 rounded-xl border transition-all duration-200 group ${
-                                currentLessonId === lesson.id 
-                                    ? 'bg-blue-600 border-blue-600 text-white shadow-md transform scale-[1.01]' 
-                                    : 'bg-white border-slate-200 hover:border-blue-300 hover:bg-blue-50 text-slate-700'
-                                }`}
-                            >
-                                <div className={`font-bold text-base sm:text-lg mb-1 ${currentLessonId === lesson.id ? 'text-white' : 'text-slate-800'}`}>
-                                {lesson.title.cn}
-                                </div>
-                                <div className={`text-xs sm:text-sm ${currentLessonId === lesson.id ? 'text-blue-100' : 'text-slate-500'}`}>
-                                {lesson.title.uz}
-                                </div>
-                            </button>
-                            ))}
-                        </div>
-                        
-                        <div className="bg-indigo-50 border border-indigo-100 p-3 sm:p-4 rounded-xl mt-4">
-                            <h3 className="font-bold text-indigo-800 text-xs sm:text-sm mb-2 flex items-center gap-2">
-                            <GitMerge size={14}/> 本课结构 (Qurilish)
-                            </h3>
-                            <ul className="text-[10px] sm:text-xs space-y-2 text-indigo-700 font-mono font-semibold">
-                            {currentLesson.structures.map((s, i) => (
-                                <li key={i} className="flex items-start gap-2">
-                                <span className="bg-indigo-200 text-indigo-800 px-1.5 rounded min-w-[1.2em] text-center flex-shrink-0">{i + 1}</span>
-                                <span className="break-words">{s}</span>
-                                </li>
-                            ))}
-                            </ul>
-                        </div>
-                        </div>
-
-                        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow-sm border border-slate-200">
-                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 border-b border-slate-100 pb-4 gap-2">
-                            <div>
-                                <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] sm:text-xs font-bold mb-1 sm:mb-2">Lesson {currentLesson.id}</span>
-                                <h2 className="text-xl sm:text-2xl font-bold text-slate-800">{currentLesson.title.cn}</h2>
-                                <h3 className="text-sm sm:text-lg text-slate-500">{currentLesson.title.uz}</h3>
-                            </div>
-                            </div>
-
-                            <div className="flex flex-wrap justify-between items-center mb-4 gap-2">
-                            <span className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider bg-slate-100 px-2 py-1 rounded truncate max-w-[60%]">
-                                {currentExample.structureType}
-                            </span>
-                            <button 
-                                onClick={() => setCurrentExampleIndex(prev => (prev + 1) % currentLesson.examples.length)}
-                                className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium text-xs sm:text-sm transition ml-auto"
-                            >
-                                <RefreshCw size={14} /> <span className="hidden sm:inline">下一个例子</span> (Keyingi)
-                            </button>
-                            </div>
-                            
-                            {/* Scrollable Container for Mobile SVG */}
-                            <div className="w-full aspect-[4/3] sm:aspect-[2/1] bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 overflow-hidden relative shadow-inner overflow-x-auto touch-pan-x">
-                            <GrammarTree example={currentExample} animate={animateDiagram} />
-                            <div className="absolute bottom-2 right-2 text-[10px] text-slate-400 sm:hidden pointer-events-none bg-white/50 px-2 rounded">↔ Surish (Scroll)</div>
-                            </div>
-
-                            <div className="mt-4 sm:mt-6 text-center">
-                            <p className="text-xl sm:text-2xl font-bold text-slate-800 tracking-wide mb-1">{currentExample.chars.join(" ")}</p>
-                            <p className="text-base sm:text-lg text-blue-600 font-medium">{currentExample.uzbek}</p>
-                            </div>
-
-                            <div className="mt-6 sm:mt-8 flex flex-wrap gap-2 justify-center text-[10px] sm:text-xs">
-                            {Object.entries(GRAMMAR_TERMS).map(([key, val]) => (
-                                <div key={key} className="flex items-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full border border-slate-100 bg-white shadow-sm">
-                                <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full" style={{backgroundColor: val.color}}></div>
-                                <span className="text-slate-600 font-medium">{val.cn}</span>
-                                <span className="text-slate-400 border-l pl-1.5 ml-0.5">{val.uz}</span>
-                                </div>
-                            ))}
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    )}
-
-                    {activeTab === 'practice' && (
-                    <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8">
-                        <div className="bg-white p-4 sm:p-8 rounded-2xl shadow-lg border border-slate-200 text-center relative overflow-hidden">
-                            <h2 className="text-lg sm:text-2xl font-bold mb-2">构造句子 (Gap tuzish)</h2>
-                            <p className="text-sm sm:text-base text-slate-500 mb-6 sm:mb-8">尝试造句：<br/><strong>他跑得不快</strong> (Tasdiq, Inkor yoki Solishtirish)</p>
-                            
-                            {/* Mobile-friendly construction area */}
-                            <div className="min-h-[100px] sm:min-h-[140px] bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-3 sm:p-6 mb-6 sm:mb-8 transition-colors hover:border-blue-300">
-                            {practiceSentence.length === 0 ? (
-                                <div className="text-slate-400 flex flex-col items-center gap-2">
-                                <MousePointer2 size={24} className="opacity-50 sm:w-8 sm:h-8" />
-                                <span className="text-xs sm:text-base">点击下方词语开始造句<br/>(So'zlarni tanlang)</span>
-                                </div>
-                            ) : (
-                                practiceSentence.map((word, idx) => (
-                                <button 
-                                    key={word.uniqueId} 
-                                    onClick={() => removeFromPractice(word.uniqueId)}
-                                    className="animate-in fade-in zoom-in duration-200 active:scale-95 transition-transform"
-                                >
-                                    <div 
-                                    className="px-3 py-2 sm:px-4 sm:py-3 rounded-lg sm:rounded-xl shadow-md border-b-4 text-white font-bold text-base sm:text-xl flex flex-col items-center min-w-[50px] sm:min-w-[70px]"
-                                    style={{backgroundColor: word.color, borderColor: 'rgba(0,0,0,0.2)'}}
-                                    >
-                                    {word.char}
-                                    <span className="text-[8px] sm:text-[10px] opacity-90 font-normal uppercase tracking-wider mt-0.5">{word.role}</span>
-                                    </div>
-                                </button>
-                                ))
-                            )}
-                            </div>
-
-                            <div className="flex justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
-                            <button 
-                                onClick={clearPractice}
-                                className="px-4 py-2 sm:px-6 sm:py-2.5 text-slate-500 bg-slate-50 hover:bg-slate-100 rounded-xl transition font-medium text-sm sm:text-base"
-                            >
-                                清除 (Tozalash)
-                            </button>
-                            <button 
-                                className="px-5 py-2 sm:px-8 sm:py-2.5 bg-green-500 hover:bg-green-600 text-white rounded-xl font-bold shadow-lg shadow-green-200 transition flex items-center gap-2 transform active:scale-95 text-sm sm:text-base"
-                                onClick={checkSentence}
-                            >
-                                <CheckCircle size={18} className="sm:w-5 sm:h-5" /> 检查 (Tekshirish)
-                            </button>
-                            </div>
-
-                            {/* Feedback Display Area */}
-                            {feedback && (
-                            <div className={`mb-6 sm:mb-8 p-3 sm:p-4 rounded-xl flex items-start gap-3 sm:gap-4 text-left animate-in fade-in slide-in-from-top-2 ${
-                                feedback.type === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
-                            }`}>
-                                <div className={`mt-1 p-1.5 sm:p-2 rounded-full ${feedback.type === 'success' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'}`}>
-                                {feedback.type === 'success' ? <CheckCircle size={20} className="sm:w-6 sm:h-6" /> : <XCircle size={20} className="sm:w-6 sm:h-6" />}
-                                </div>
-                                <div>
-                                <h4 className={`font-bold text-sm sm:text-lg ${feedback.type === 'success' ? 'text-green-800' : 'text-red-800'}`}>
-                                    {feedback.msgCn}
-                                </h4>
-                                <p className={`text-xs sm:text-base ${feedback.type === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-                                    {feedback.msgUz}
-                                </p>
-                                </div>
-                            </div>
-                            )}
-
-                            <div className="border-t border-slate-100 pt-6 sm:pt-8">
-                            <h3 className="text-xs sm:text-sm font-bold text-slate-400 uppercase mb-3 sm:mb-4 tracking-widest text-left">词库 (So'z banki)</h3>
-                            {/* Mobile optimized grid for words */}
-                            <div className="grid grid-cols-4 sm:flex sm:flex-wrap gap-2 sm:gap-3 justify-center">
-                                {practiceWords.map(word => (
-                                <button
-                                    key={word.id}
-                                    onClick={() => addToPractice(word)}
-                                    className="group relative px-2 py-2 sm:px-5 sm:py-3 bg-white border border-slate-200 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md hover:border-blue-400 active:bg-blue-50 transition text-center sm:text-left min-w-0 sm:min-w-[90px]"
-                                >
-                                    {/* Dot only visible on larger screens or positioned differently */}
-                                    <div className="hidden sm:flex justify-between items-start mb-1">
-                                        <div className="w-2 h-2 rounded-full" style={{backgroundColor: word.color}}></div>
-                                    </div>
-                                    <div className="font-bold text-slate-800 text-lg sm:text-2xl group-hover:text-blue-600">{word.char}</div>
-                                    <div className="text-[10px] sm:text-xs text-slate-400 mt-0.5 sm:mt-1 truncate">{word.pinyin}</div>
-                                    {/* Mobile dot indicator */}
-                                    <div className="sm:hidden w-1.5 h-1.5 rounded-full absolute top-1 right-1" style={{backgroundColor: word.color}}></div>
-                                </button>
-                                ))}
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                    )}
-                </main>
-                </div>
-            );
+        function init() {
+            renderTabs();
+            renderContent();
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<ChineseGrammarApp />);
+        function switchTab(tabId) {
+            activeTab = tabId;
+            renderTabs();
+            renderContent();
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabs-container');
+            container.innerHTML = TABS.map(tab => `
+                <button onclick="switchTab('${tab.id}')" class="flex items-center gap-2 px-5 py-3 rounded-full font-medium transition-all duration-300 ${activeTab === tab.id ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-900/50' : 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/5'}">
+                    <i class="fa-solid ${tab.icon}"></i>
+                    <span>${tab.label}</span>
+                </button>
+            `).join('');
+        }
+
+        function renderContent() {
+            const content = document.getElementById('main-content');
+            content.innerHTML = ''; // clear
+
+            switch (activeTab) {
+                case 'vocab':
+                    renderVocabCards();
+                    break;
+                case 'vocabTest':
+                    startVocabTest();
+                    break;
+                case 'dialogue':
+                    renderDialogue();
+                    break;
+                case 'grammar':
+                    renderGrammar();
+                    break;
+                case 'grammarTest':
+                    startGrammarTest();
+                    break;
+                case 'fillBlanks':
+                    renderFillBlanks();
+                    break;
+            }
+        }
+
+        // --- VIEWS ---
+
+        function renderVocabCards() {
+            const content = document.getElementById('main-content');
+            let html = `<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">`;
+            VOCABULARY.forEach(word => {
+                html += `
+                    <div class="relative w-full h-48 cursor-pointer perspective-1000" onclick="this.querySelector('.flip-inner').classList.toggle('rotate-y-180')">
+                        <div class="flip-inner w-full h-full duration-500 preserve-3d absolute inset-0 transition-transform">
+                            <!-- Front -->
+                            <div class="absolute inset-0 backface-hidden bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl flex flex-col items-center justify-center shadow-lg p-4 hover:bg-white/20 transition-all">
+                                <button onclick="event.stopPropagation(); playAudio('${word.hanzi.replace(/'/g, "\\'")}')" class="absolute top-4 right-4 p-2 bg-indigo-500/30 hover:bg-indigo-500/60 rounded-full transition-colors text-white z-10">
+                                    <i class="fa-solid fa-volume-up"></i>
+                                </button>
+                                <span class="text-6xl font-bold text-white tracking-widest">${word.hanzi}</span>
+                            </div>
+                            <!-- Back -->
+                            <div class="absolute inset-0 backface-hidden rotate-y-180 bg-indigo-900/40 backdrop-blur-md border border-indigo-500/30 rounded-2xl flex flex-col items-center justify-center p-6 shadow-lg">
+                                <span class="text-2xl font-semibold text-indigo-300 mb-2">${word.pinyin}</span>
+                                <span class="text-lg text-white mb-1 font-medium text-center">🇺🇿 ${word.uz}</span>
+                                <span class="text-sm text-slate-300 mb-1 text-center">🇷🇺 ${word.ru}</span>
+                                <span class="text-sm text-slate-400 text-center">🇬🇧 ${word.en}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            content.innerHTML = html;
+        }
+
+        // --- VOCAB TEST ---
+        let vtState = { questions: [], currentIndex: 0, score: 0, finished: false };
+
+        function startVocabTest() {
+            const shuffledVocab = shuffleArray(VOCABULARY);
+            vtState.questions = shuffledVocab.map(word => {
+                let wrongOptions = VOCABULARY.filter(w => w.id !== word.id);
+                wrongOptions = shuffleArray(wrongOptions).slice(0, 3).map(w => w.uz);
+                return {
+                    hanzi: word.hanzi,
+                    ans: word.uz,
+                    options: shuffleArray([word.uz, ...wrongOptions])
+                };
+            });
+            vtState.currentIndex = 0;
+            vtState.score = 0;
+            vtState.finished = false;
+            renderVocabTestUI();
+        }
+
+        function renderVocabTestUI() {
+            const container = document.getElementById('main-content');
+            if (activeTab !== 'vocabTest') return;
+
+            if (vtState.finished) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                        <i class="fa-solid fa-circle-check text-teal-400 text-7xl mb-4"></i>
+                        <h2 class="text-3xl font-bold text-white mb-2">Test Yakunlandi!</h2>
+                        <p class="text-xl text-slate-300 mb-8">Sizning natijangiz: ${vtState.score} / ${vtState.questions.length}</p>
+                        <button onclick="startVocabTest()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Qayta boshlash
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const currentQ = vtState.questions[vtState.currentIndex];
+            let optionsHtml = currentQ.options.map(opt => `
+                <button onclick="handleVocabAnswer(this, '${opt.replace(/'/g, "\\'")}', '${currentQ.ans.replace(/'/g, "\\'")}')" class="vocab-opt-btn p-4 rounded-xl border transition-all duration-300 text-lg font-medium bg-white/10 hover:bg-white/20 border-white/20 text-white">
+                    ${opt}
+                </button>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="max-w-2xl mx-auto bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl">
+                    <div class="flex justify-between text-slate-400 text-sm font-medium mb-8">
+                        <span>Savol: ${vtState.currentIndex + 1} / ${vtState.questions.length}</span>
+                        <span>Natija: ${vtState.score}</span>
+                    </div>
+                    
+                    <div class="text-center mb-10">
+                        <p class="text-indigo-300 mb-4 text-lg font-medium">Quyidagi so'zning tarjimasini toping:</p>
+                        <h1 class="text-7xl font-bold text-white">${currentQ.hanzi}</h1>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.handleVocabAnswer = function(btn, selectedOpt, correctOpt) {
+            const btns = document.querySelectorAll('.vocab-opt-btn');
+            btns.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('bg-white/10', 'hover:bg-white/20', 'border-white/20', 'text-white');
+                b.classList.add('bg-white/5', 'border-white/5', 'text-slate-500', 'opacity-50');
+                if (b.innerText.trim() === correctOpt) {
+                    b.className = "vocab-opt-btn p-4 rounded-xl border transition-all duration-300 text-lg font-medium bg-teal-500/50 border-teal-500 text-white";
+                }
+            });
+
+            if (selectedOpt === correctOpt) {
+                vtState.score++;
+            } else {
+                btn.className = "vocab-opt-btn p-4 rounded-xl border transition-all duration-300 text-lg font-medium bg-rose-500/50 border-rose-500 text-white";
+            }
+
+            setTimeout(() => {
+                if (vtState.currentIndex < vtState.questions.length - 1) {
+                    vtState.currentIndex++;
+                    renderVocabTestUI();
+                } else {
+                    vtState.finished = true;
+                    renderVocabTestUI();
+                }
+            }, 1000);
+        };
+
+        // --- DIALOGUE ---
+        function renderDialogue() {
+            const container = document.getElementById('main-content');
+            let html = '<div class="space-y-8 max-w-4xl mx-auto">';
+            DIALOGUES.forEach(dialogue => {
+                html += `
+                    <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+                        <div class="bg-indigo-900/40 p-4 border-b border-white/10">
+                            <h3 class="text-xl font-bold text-indigo-200">${dialogue.title}</h3>
+                        </div>
+                        <div class="p-4 md:p-6 space-y-6">
+                `;
+                dialogue.lines.forEach(line => {
+                    html += `
+                        <div class="group relative flex flex-col md:flex-row gap-4 p-4 rounded-xl hover:bg-white/5 transition-colors border border-transparent hover:border-white/5">
+                            <div class="md:w-24 shrink-0 flex items-center justify-between md:flex-col md:items-start md:justify-start">
+                                <span class="inline-block px-3 py-1 bg-white/10 text-indigo-300 text-sm font-semibold rounded-lg mb-2">${line.speaker}</span>
+                                <button onclick="playAudio('${line.hanzi.replace(/'/g, "\\'")}')" class="p-2 text-slate-400 hover:text-teal-400 hover:bg-teal-400/10 rounded-full transition-all">
+                                    <i class="fa-solid fa-volume-up"></i>
+                                </button>
+                            </div>
+                            <div class="flex-1 space-y-2">
+                                <p class="text-2xl text-white font-medium">${line.hanzi}</p>
+                                <p class="text-indigo-300 font-medium">${line.pinyin}</p>
+                                <div class="space-y-1 mt-3 pt-3 border-t border-white/5 text-sm">
+                                    <p class="text-slate-300"><span class="text-slate-500 font-mono w-6 inline-block">UZ</span> ${line.uz}</p>
+                                    <p class="text-slate-400"><span class="text-slate-500 font-mono w-6 inline-block">RU</span> ${line.ru}</p>
+                                    <p class="text-slate-500"><span class="text-slate-600 font-mono w-6 inline-block">EN</span> ${line.en}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // --- GRAMMAR ---
+        function renderGrammar() {
+            const container = document.getElementById('main-content');
+            let html = '<div class="space-y-6 max-w-4xl mx-auto">';
+            GRAMMAR.forEach(item => {
+                html += `
+                    <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 shadow-xl">
+                        <h3 class="text-2xl font-bold text-indigo-300 mb-4">${item.title}</h3>
+                        
+                        <div class="mb-6 space-y-2 text-slate-300 bg-black/20 p-4 rounded-xl border border-white/5">
+                            <p><span class="font-semibold text-white mr-2">🇺🇿 O'zbek:</span> ${item.explanation.uz}</p>
+                            <p><span class="font-semibold text-white mr-2">🇷🇺 Рус:</span> ${item.explanation.ru}</p>
+                            <p><span class="font-semibold text-white mr-2">🇬🇧 Eng:</span> ${item.explanation.en}</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Misollar (Examples)</h4>
+                `;
+                item.examples.forEach(ex => {
+                    html += `
+                        <div class="flex flex-col gap-1 p-3 rounded-lg hover:bg-white/5 transition border border-transparent hover:border-white/5 group">
+                            <div class="flex items-center justify-between">
+                                <p class="text-xl text-white">${ex.hanzi}</p>
+                                <button onclick="playAudio('${ex.hanzi.replace(/'/g, "\\'")}')" class="text-slate-500 hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <i class="fa-solid fa-volume-up"></i>
+                                </button>
+                            </div>
+                            <p class="text-indigo-300/80">${ex.pinyin}</p>
+                            <p class="text-slate-400 italic text-sm">${ex.uz}</p>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // --- GRAMMAR TEST ---
+        let gtState = { questions: [], currentIndex: 0, score: 0, finished: false };
+
+        function startGrammarTest() {
+            gtState.questions = shuffleArray(GRAMMAR_TEST).map(q => ({
+                ...q,
+                options: shuffleArray(q.options)
+            }));
+            gtState.currentIndex = 0;
+            gtState.score = 0;
+            gtState.finished = false;
+            renderGrammarTestUI();
+        }
+
+        function renderGrammarTestUI() {
+            const container = document.getElementById('main-content');
+            if (activeTab !== 'grammarTest') return;
+
+            if (gtState.finished) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-12 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                        <i class="fa-solid fa-circle-check text-teal-400 text-7xl mb-4"></i>
+                        <h2 class="text-3xl font-bold text-white mb-2">Test Yakunlandi!</h2>
+                        <p class="text-xl text-slate-300 mb-8">Sizning natijangiz: ${gtState.score} / ${gtState.questions.length}</p>
+                        <button onclick="startGrammarTest()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Qayta boshlash
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const currentQ = gtState.questions[gtState.currentIndex];
+            let optionsHtml = currentQ.options.map(opt => `
+                <button onclick="handleGrammarAnswer(this, '${opt.replace(/'/g, "\\'")}', '${currentQ.ans.replace(/'/g, "\\'")}')" class="grammar-opt-btn p-4 rounded-xl border transition-all duration-300 text-xl font-semibold bg-white/10 hover:bg-white/20 border-white/20 text-white">
+                    ${opt}
+                </button>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="max-w-2xl mx-auto bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-8 shadow-2xl">
+                    <div class="flex justify-between text-slate-400 text-sm font-medium mb-6">
+                        <span>Savol: ${gtState.currentIndex + 1} / ${gtState.questions.length}</span>
+                        <span>Natija: ${gtState.score}</span>
+                    </div>
+                    
+                    <div class="mb-10">
+                        <h1 class="text-3xl sm:text-4xl font-bold text-white leading-relaxed">${currentQ.q}</h1>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        ${optionsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        window.handleGrammarAnswer = function(btn, selectedOpt, correctOpt) {
+            const btns = document.querySelectorAll('.grammar-opt-btn');
+            btns.forEach(b => {
+                b.disabled = true;
+                b.classList.remove('bg-white/10', 'hover:bg-white/20', 'border-white/20', 'text-white');
+                b.classList.add('bg-white/5', 'border-white/5', 'text-slate-500', 'opacity-50');
+                if (b.innerText.trim() === correctOpt) {
+                    b.className = "grammar-opt-btn p-4 rounded-xl border transition-all duration-300 text-xl font-semibold bg-teal-500/50 border-teal-500 text-white";
+                }
+            });
+
+            if (selectedOpt === correctOpt) {
+                gtState.score++;
+            } else {
+                btn.className = "grammar-opt-btn p-4 rounded-xl border transition-all duration-300 text-xl font-semibold bg-rose-500/50 border-rose-500 text-white";
+            }
+
+            setTimeout(() => {
+                if (gtState.currentIndex < gtState.questions.length - 1) {
+                    gtState.currentIndex++;
+                    renderGrammarTestUI();
+                } else {
+                    gtState.finished = true;
+                    renderGrammarTestUI();
+                }
+            }, 1200);
+        };
+
+        // --- FILL IN THE BLANKS ---
+        let fbAnswers = {};
+
+        function renderFillBlanks() {
+            fbAnswers = {};
+            const words = [...VOCABULARY].map(v => v.hanzi).sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'));
+            const container = document.getElementById('main-content');
+            
+            let html = `
+                <div class="max-w-4xl mx-auto bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl">
+                    <div class="flex justify-between items-center mb-8">
+                        <h2 class="text-2xl font-bold text-white">So'zlarni to'ldiring</h2>
+                        <span id="fb-score" class="hidden px-4 py-1 bg-indigo-500/30 text-indigo-200 rounded-full font-medium border border-indigo-500/50"></span>
+                    </div>
+                    <div class="space-y-6">
+            `;
+
+            FILL_BLANKS.forEach((item, index) => {
+                let options = `<option value="" disabled selected class="bg-slate-800 text-slate-400">___</option>`;
+                words.forEach(w => {
+                    options += `<option value="${w}" class="bg-slate-800 text-white">${w}</option>`;
+                });
+                
+                html += `
+                    <div class="flex flex-wrap items-center gap-2 text-lg sm:text-xl text-white bg-black/20 p-4 rounded-xl border border-white/5">
+                        <span class="text-indigo-400 font-mono text-sm mr-2">${index + 1}.</span>
+                        <span>${item.parts[0]}</span>
+                        
+                        <div class="relative inline-block">
+                            <select onchange="fbAnswers[${item.id}] = this.value" id="fb-select-${item.id}" class="appearance-none outline-none font-semibold px-4 py-1 rounded-lg cursor-pointer transition-colors bg-white/10 hover:bg-white/20 border border-white/20 text-indigo-300">
+                                ${options}
+                            </select>
+                        </div>
+
+                        <span>${item.parts[1]}</span>
+                        <span id="fb-result-${item.id}" class="ml-2 flex items-center hidden"></span>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="mt-8 flex gap-4 justify-end" id="fb-actions">
+                        <button onclick="checkFbAnswers()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition flex items-center gap-2 shadow-lg shadow-indigo-900/50">
+                            <i class="fa-solid fa-check-square"></i> Tekshirish
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.checkFbAnswers = function() {
+            let score = 0;
+            FILL_BLANKS.forEach(item => {
+                const select = document.getElementById(`fb-select-${item.id}`);
+                const resultSpan = document.getElementById(`fb-result-${item.id}`);
+                select.disabled = true;
+                
+                if (fbAnswers[item.id] === item.ans) {
+                    score++;
+                    select.className = "appearance-none outline-none font-semibold px-4 py-1 rounded-lg cursor-not-allowed transition-colors bg-teal-500/20 border border-teal-500 text-teal-300";
+                    resultSpan.innerHTML = `<i class="fa-solid fa-circle-check text-teal-400"></i>`;
+                    resultSpan.classList.remove('hidden');
+                } else {
+                    select.className = "appearance-none outline-none font-semibold px-4 py-1 rounded-lg cursor-not-allowed transition-colors bg-rose-500/20 border border-rose-500 text-rose-300";
+                    resultSpan.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400 mr-1"></i><span class="text-sm text-rose-400">(To'g'ri: <span class="font-bold">${item.ans}</span>)</span>`;
+                    resultSpan.classList.remove('hidden');
+                }
+            });
+
+            const scoreSpan = document.getElementById('fb-score');
+            scoreSpan.textContent = `Natija: ${score} / ${FILL_BLANKS.length}`;
+            scoreSpan.classList.remove('hidden');
+
+            document.getElementById('fb-actions').innerHTML = `
+                <button onclick="renderFillBlanks()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> Qayta ishlash
+                </button>
+            `;
+        };
+
+        // Bootstrap App
+        window.onload = init;
     </script>
 </body>
 </html>
